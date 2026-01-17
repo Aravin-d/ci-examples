@@ -45,6 +45,6 @@ jobs:
 
       - name: Push docker image
         run: |
-          docker push ${{ steps.vars.outputs.sha }}
-          docker push ${{ steps.vars.outputs.latest }}
-          docker push ${{ steps.vars.outputs.branch }}
+          docker push ${{ steps.meta.outputs.sha }}
+          docker push ${{ steps.meta.outputs.latest }}
+          docker push ${{ steps.meta.outputs.branch }}
