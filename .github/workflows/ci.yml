@@ -23,16 +23,28 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-      - name: Set image name to lower case
-        id: vars
+      - name: Set image tags
+        id: meta
         run: |
-          IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}/ci-examples:${GITHUB_SHA}"
-          echo "image=$IMAGE" >> $GITHUB_OUTPUT
+          IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}"
+          SHA_TAG="${IMAGE}:${GITHUB_SHA}"
+          LATEST_TAG="${IMAGE}:latest"
+          BRANCH_TAG="${IMAGE}:${GITHUB_REF_NAME}"
+
+          echo "sha=$SHA_TAG" >> $GITHUB_OUTPUT
+          echo "latest=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH_TAG" >> $GITHUB_OUTPUT
 
       - name: Build docker image
         run: |
-          docker build -t ${{ steps.vars.outputs.image }} .
+          docker build \
+            -t ${{ steps.meta.outputs.sha }} \
+            -t ${{ steps.meta.outputs.latest }} \
+            -t ${{ steps.meta.outputs.branch }} \
+            .
 
       - name: Push docker image
         run: |
-          docker push ${{ steps.vars.outputs.image }}
+          docker push ${{ steps.vars.outputs.sha }}
+          docker push ${{ steps.vars.outputs.latest }}
+          docker push ${{ steps.vars.outputs.branch }}
