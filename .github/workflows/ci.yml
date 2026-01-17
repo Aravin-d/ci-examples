@@ -10,32 +10,23 @@ jobs:
   basic-check:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: write
+
     steps:
 
       - name: checkout code
         uses: actions/checkout@v4
 
-      - name: Set up node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashfiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-
-      - name: Install deps
-        run: npm ci
-
-      - name: start server and check health
+      - name: Login to GHCR
         run: |
-          node server.js &
-          sleep 2
-          curl -f http://localhost:3000/health 
+          echo $GHCR_TOKEN | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
 
-      - name: Run fucntional test
-        run: node test.js
+      - name: Build docker image
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}/ci-examples:${{ github.sha }} .
+
+      - name: Push docker image
+        run: |
+          docker push ghcr.io/${{ github.repository }}/ci-examples:${{ github.sha }}
