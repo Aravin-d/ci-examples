@@ -14,5 +14,8 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v4
 
-      - name: Run node app
-        run: node servers.js 
+      - name: start server and check health
+        run: |
+          node server.js &
+          sleep 2
+          curl -f http://localhost:3000/health 
