@@ -1,0 +1,34 @@
+name: Rollback Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'Git commit SHA to roll back to'
+        required: true
+
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy specifi SHA to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: | 
+            set -e
+
+            docker pull ${{ secrets.DOCKERHU_USERNAME }}/backend:${{ inputs.sha }}
+
+            docker stop myapp || true
+            docker rm myapp || true
+
+            docker run -d \
+              --name myapp \
+              -p 3000:3000 \
+              --restart unless-stopped \
+              ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ inputs.sha }}
