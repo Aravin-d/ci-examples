@@ -49,7 +49,7 @@ jobs:
             docker run -d \
               --name myapp \
               --label commit_sha=${{ github.sha }} \
-              --label deployed_at $(date -u +"%Y-%m-%dT%H:%M:$SZ") \
+              --label deployed_at=$(date -u +"%Y-%m-%dT%H:%M:$SZ") \
               -p 3000:3000 \
               --restart unless-stopped \
               ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }}
