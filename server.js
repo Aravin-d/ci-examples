@@ -6,7 +6,7 @@ const VERSION_INFO = {
     service: "backend",
     env: process.env.APP_ENV || "unknown",
     commit: process.env.APP_COMMIT_SHA || "unknown",
-    deployed_at: process.ENV.APP_DEPLOYED_AT || "unknown"
+    deployed_at: process.env.APP_DEPLOYED_AT || "unknown"
 };
 
 const server = http.createServer((req, res) => {
