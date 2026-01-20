@@ -27,7 +27,7 @@ jobs:
         
       - name: Push Docker image
         run: |
-          docker push -t ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }} 
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }} 
 
 
       - name: Deploy on EC2 via ssh
